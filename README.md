@@ -38,6 +38,64 @@ db.coll.find({date: ISODate("2020-09-25T13:57:17.180Z")})           # Returns al
 db.coll.find({name: "Mohamed", age: 32}).explain("executionStats")  # Returns statistics about the query execution.
 db.coll.distinct("name")                                            # Returns an array of distinct values for the name field.
 ```
+--------------------------------------------------------------------------------------------------
+
+## Update
+```bash
+
+db.coll.update({"_id": 1}, {"year": 2016})                                          # Replaces the entire document with a new document that has only the year field set to 2016.
+db.coll.update({"_id": 1}, {$set: {"year": 2016, name: "Mohamed"}})                 # Sets the year field to 2016 and name field to Mohamed.
+db.coll.update({"_id": 1}, {$unset: {"year": 1}})                                   # Removes the year field from the document.
+db.coll.update({"_id": 1}, {$rename: {"year": "date"} })                            # Renames the year field to date.
+db.coll.update({"_id": 1}, {$inc: {"year": 5}})                                     # Increments the year field by 5.
+db.coll.update({"_id": 1}, {$mul: {price: NumberDecimal("1.25"), qty: 2}})          # Multiplies the price field by 1.25 and qty field by 2.
+db.coll.update({"_id": 1}, {$min: {"imdb": 5}})                                     # Sets the imdb field to 5 if it is less than 5.
+db.coll.update({"_id": 1}, {$max: {"imdb": 8}})                                     # Sets the imdb field to 8 if it is greater than 8.
+db.coll.update({"_id": 1}, {$currentDate: {"lastModified": true}})                  # Sets the lastModified field to the current date and time.
+db.coll.update({"_id": 1}, {$currentDate: {"lastModified": {$type: "timestamp"}}})  # Sets the lastModified field to the current timestamp.
+```
+# Array:
+```bash
+
+db.coll.update({"_id": 1}, {$push :{"array": 1}})                                   # Adds an element with value of 1 to the end of array field.
+db.coll.update({"_id": 1}, {$pull :{"array": 1}})                                   # Removes all elements with value of 1 from array field.
+db.coll.update({"_id": 1}, {$addToSet :{"array": 2}})                               # Adds an element with value of 2 to array field if it doesn’t already exist.
+db.coll.update({"_id": 1}, {$pop: {"array": 1}})                                    # Removes and returns the last element from array field.
+db.coll.update({"_id": 1}, {$pop: {"array": -1}})                                   # Removes and returns the first element from array field.
+db.coll.update({"_id": 1}, {$pullAll: {"array" :[3, 4, 5]}})                        # Removes all elements with values of either 3,4 or,5 from array field.
+db.coll.update({"_id": 1}, {$push: {scores: {$each: [90, 92, 85]}}})                # Adds multiple elements to scores array using $each modifier.
+db.coll.updateOne({"_id": 1, "grades": 80}, {$set: {"grades.$":82}})                # Updates first element in grades array that matches query filter with a new value of $82.
+db.coll.updateMany({}, {$inc: {"grades.$[]":10}})                                   # Increments all elements in grades array by 10using[] positional operator.
+db.coll.update({}, {$set: {"grades.$[element]":100}}, 
+        {multi:true, arrayFilters:[{"element":{"$gte" :100}}]})                     # Updates all documents where grades array contains an element greater than or equal to $100 with a new value of $100.
+```
+# Update many:
+```bash
+
+db.coll.update({"year":1999},{$set:{"decade":"90's"}},{"multi" :true})              # Sets decade field to “90’s” for all documents where year is equal to $1999.
+db.coll.updateMany({"year" :1999},{$set:{"decade":"90's"}})                         # Same as above.
+```
+
+# Upsert:
+```bash
+db.coll.update({"_id" :1},{$set:{item:"apple"},$setOnInsert:{defaultQty :100}},{upsert:true})   
+# Inserts a new document with _id equal to $1,item equal to “apple”,and defaultQty equal to $100 if no document matches query filter.
+
+```
+--------------------------------------------------------------------------------------------------
+
+## Delete
+```bash
+
+db.coll.remove({name: "Max"})                       # Removes all documents where name is Max.
+db.coll.remove({name: "Max"}, {justOne: true})      # Removes only one document where name is Max.
+db.coll.remove({})                                  # Removes all documents in the collection. WARNING! This does not delete the collection itself and its index definitions.
+db.coll.remove({name: "Max"}, {"writeConcern": {"w": "majority", "wtimeout": 5000}})
+# Removes all documents where name is Max with write concern set to majority and write timeout set to 5000 milliseconds.
+db.coll.findOneAndDelete({"name": "Max"})           # Finds a document where name is Max, removes it, and returns the removed document.
+```
+
+--------------------------------------------------------------------------------------------------
 # Count:
 ```bash
 
@@ -155,43 +213,9 @@ db.coll.find().readConcern("majority") # Returns all documents with read concern
 ```
 
 --------------------------------------------------------------------------------------------------
-  
-## Update
-```bash
 
-db.coll.update({"_id": 1}, {"year": 2016})                                          # Replaces the entire document with a new document that has only the year field set to 2016.
-db.coll.update({"_id": 1}, {$set: {"year": 2016, name: "Mohamed"}})                 # Sets the year field to 2016 and name field to Mohamed.
-db.coll.update({"_id": 1}, {$unset: {"year": 1}})                                   # Removes the year field from the document.
-db.coll.update({"_id": 1}, {$rename: {"year": "date"} })                            # Renames the year field to date.
-db.coll.update({"_id": 1}, {$inc: {"year": 5}})                                     # Increments the year field by 5.
-db.coll.update({"_id": 1}, {$mul: {price: NumberDecimal("1.25"), qty: 2}})          # Multiplies the price field by 1.25 and qty field by 2.
-db.coll.update({"_id": 1}, {$min: {"imdb": 5}})                                     # Sets the imdb field to 5 if it is less than 5.
-db.coll.update({"_id": 1}, {$max: {"imdb": 8}})                                     # Sets the imdb field to 8 if it is greater than 8.
-db.coll.update({"_id": 1}, {$currentDate: {"lastModified": true}})                  # Sets the lastModified field to the current date and time.
-db.coll.update({"_id": 1}, {$currentDate: {"lastModified": {$type: "timestamp"}}})  # Sets the lastModified field to the current timestamp.
-```
 
-# Array:
-```bash
 
-db.coll.update({"_id": 1}, {$push :{"array": 1}})                                   # Adds an element with value of 1 to the end of array field.
-db.coll.update({"_id": 1}, {$pull :{"array": 1}})                                   # Removes all elements with value of 1 from array field.
-db.coll.update({"_id": 1}, {$addToSet :{"array": 2}})                               # Adds an element with value of 2 to array field if it doesn’t already exist.
-db.coll.update({"_id": 1}, {$pop: {"array": 1}})                                    # Removes and returns the last element from array field.
-db.coll.update({"_id": 1}, {$pop: {"array": -1}})                                   # Removes and returns the first element from array field.
-db.coll.update({"_id": 1}, {$pullAll: {"array" :[3, 4, 5]}})                        # Removes all elements with values of either 3,4 or,5 from array field.
-db.coll.update({"_id": 1}, {$push: {scores: {$each: [90, 92, 85]}}})                # Adds multiple elements to scores array using $each modifier.
-db.coll.updateOne({"_id": 1, "grades": 80}, {$set: {"grades.$":82}})                # Updates first element in grades array that matches query filter with a new value of $82.
-db.coll.updateMany({}, {$inc: {"grades.$[]":10}})                                   # Increments all elements in grades array by 10using[] positional operator.
-db.coll.update({}, {$set: {"grades.$[element]":100}}, 
-        {multi:true, arrayFilters:[{"element":{"$gte" :100}}]})                     # Updates all documents where grades array contains an element greater than or equal to $100 with a new value of $100.
-```
-# Update many:
-```bash
-
-db.coll.update({"year":1999},{$set:{"decade":"90's"}},{"multi" :true})              # Sets decade field to “90’s” for all documents where year is equal to $1999.
-db.coll.updateMany({"year" :1999},{$set:{"decade":"90's"}})                         # Same as above.
-```
 # FindOneAndUpdate:
 ```bash
 
@@ -201,14 +225,7 @@ db.coll.findOneAndUpdate({"name":"Max"},{$inc:{"points" :5}},{returnNewDocument:
 ```
 
 
-# Upsert:
-```bash
 
-db.coll.update({"_id" :1},{$set:{item:"apple"},$setOnInsert:{defaultQty :100}},{upsert:true})   
-# Inserts a new document with _id equal to $1,item equal to “apple”,and defaultQty equal to $100 if no document matches query filter.
-
-
-```
 # Replace
 
 ```bash
@@ -238,18 +255,6 @@ db.coll.update({}, {$set: {"x": 1}}, {"writeConcern": {"w": "majority", "wtimeou
 ```
 --------------------------------------------------------------------------------------------------
 
-## Delete
-```bash
-
-db.coll.remove({name: "Max"})                       # Removes all documents where name is Max.
-db.coll.remove({name: "Max"}, {justOne: true})      # Removes only one document where name is Max.
-db.coll.remove({})                                  # Removes all documents in the collection. WARNING! This does not delete the collection itself and its index definitions.
-db.coll.remove({name: "Max"}, {"writeConcern": {"w": "majority", "wtimeout": 5000}})
-# Removes all documents where name is Max with write concern set to majority and write timeout set to 5000 milliseconds.
-db.coll.findOneAndDelete({"name": "Max"})           # Finds a document where name is Max, removes it, and returns the removed document.
-```
-
---------------------------------------------------------------------------------------------------
 
 </p>
 
