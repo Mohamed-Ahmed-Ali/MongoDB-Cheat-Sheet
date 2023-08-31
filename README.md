@@ -19,11 +19,6 @@ show collections         # Show Collections
 
 ## Create
 --------------------------------------------------------------------------------------------------
-<p align="center">
-
-<img src="https://i.imgur.com/HoAqQ6H.png">
-  
-</p>
 
 ```bash
 db.coll.insertOne({name: "Mohamed"})                                    # InsertOne to insert one document
