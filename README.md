@@ -17,7 +17,7 @@ show collections         # Show Collections
 
 <details><summary>CRUD</summary><p>
 
-## Create
+# Create
 --------------------------------------------------------------------------------------------------
 
 ```bash
@@ -27,7 +27,7 @@ db.coll.insert([{name: "Mohamed"}, {name:"Ali"}], {ordered: false})     # Insert
 ```
 --------------------------------------------------------------------------------------------------
   
-## Read
+# Read
 
 ```bash
 db.coll.findOne()                                                   # Returns a single document from the collection.
@@ -40,7 +40,7 @@ db.coll.distinct("name")                                            # Returns an
 ```
 --------------------------------------------------------------------------------------------------
 
-## Update
+# Update
 ```bash
 
 db.coll.update({"_id": 1}, {"year": 2016})                                          # Replaces the entire document with a new document that has only the year field set to 2016.
@@ -84,7 +84,7 @@ db.coll.update({"_id" :1},{$set:{item:"apple"},$setOnInsert:{defaultQty :100}},{
 ```
 --------------------------------------------------------------------------------------------------
 
-## Delete
+# Delete
 ```bash
 
 db.coll.remove({name: "Max"})                       # Removes all documents where name is Max.
