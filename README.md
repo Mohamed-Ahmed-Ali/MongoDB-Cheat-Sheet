@@ -116,6 +116,8 @@ db.coll.find({date: ISODate("2020-09-25T13:57:17.180Z")})           # Returns al
 db.coll.find({name: "Mohamed", age: 32}).explain("executionStats")  # Returns statistics about the query execution.
 db.coll.distinct("name")                                            # Returns an array of distinct values for the name field.
 ```
+
+<p><summary>Operators</summary><p>
 ## ● Count:
 ```bash
 
@@ -199,7 +201,7 @@ db.coll.find({}).sort({"year": 1, "rating": -1}).skip(10).limit(3)
 
 # Returns three documents sorted by year in ascending order and rating in descending order, skipping the first ten documents.
 ```
-
+<p>
 
 # Aggregation Pipeline: The following pipeline stages are used:
 ```bash
