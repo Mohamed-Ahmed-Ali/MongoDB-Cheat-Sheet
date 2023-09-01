@@ -280,8 +280,7 @@ db.coll.findOneAndDelete({"name": "Max"})           # Finds a document where nam
 
 <details><summary>Databases and Collections
 </summary><p>
-
--
+  
 # Create Collection
 
 
