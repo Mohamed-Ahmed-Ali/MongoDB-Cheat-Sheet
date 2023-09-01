@@ -42,7 +42,7 @@ db.coll.update({"_id": 1}, {$currentDate: {"lastModified": true}})              
 db.coll.update({"_id": 1}, {$currentDate: {"lastModified": {$type: "timestamp"}}})  # Sets the lastModified field to the current timestamp.
 ```
 
-# Array:
+## ● Array
 ```bash
 
 db.coll.update({"_id": 1}, {$push :{"array": 1}})                                   # Adds an element with value of 1 to the end of array field.
@@ -57,14 +57,14 @@ db.coll.updateMany({}, {$inc: {"grades.$[]":10}})                               
 db.coll.update({}, {$set: {"grades.$[element]":100}}, 
         {multi:true, arrayFilters:[{"element":{"$gte" :100}}]})                     # Updates all documents where grades array contains an element greater than or equal to $100 with a new value of $100.
 ```
-# Update many:
+## ● Update many:
 ```bash
 
 db.coll.update({"year":1999},{$set:{"decade":"90's"}},{"multi" :true})              # Sets decade field to “90’s” for all documents where year is equal to $1999.
 db.coll.updateMany({"year" :1999},{$set:{"decade":"90's"}})                         # Same as above.
 ```
 
-# FindOneAndUpdate:
+## ● FindOneAndUpdate:
 ```bash
 
 db.coll.findOneAndUpdate({"name":"Max"},{$inc:{"points" :5}},{returnNewDocument:true})  
