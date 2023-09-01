@@ -15,28 +15,15 @@ show collections         # Show Collections
 <p>
 </details>
 
-<details><summary>CRUD</summary><p>
+<details><summary>Create and Update</summary><p>
 
-# Create
+## Create
 --------------------------------------------------------------------------------------------------
 
 ```bash
 db.coll.insertOne({name: "Mohamed"})                                    # InsertOne to insert one document
 db.coll.Many([{name: "Mohamed"}, {name:"Ali"}])                         # InsertMany to insert ordered many (bulk) documents
 db.coll.insert([{name: "Mohamed"}, {name:"Ali"}], {ordered: false})     # InsertMany to insert unordered many (bulk) documents
-```
---------------------------------------------------------------------------------------------------
-  
-# Read
-
-```bash
-db.coll.findOne()                                                   # Returns a single document from the collection.
-db.coll.find()                                                      # Returns all documents in the collection.
-db.coll.find().pretty()                                             # Returns all documents in the collection in a formatted way.
-db.coll.find({name: "Mohamed", age: 32})                            # Returns all documents where name is “Max” and age is 32.
-db.coll.find({date: ISODate("2020-09-25T13:57:17.180Z")})           # Returns all documents where date is “2020-09-25T13:57:17.180Z”.
-db.coll.find({name: "Mohamed", age: 32}).explain("executionStats")  # Returns statistics about the query execution.
-db.coll.distinct("name")                                            # Returns an array of distinct values for the name field.
 ```
 --------------------------------------------------------------------------------------------------
 
@@ -54,6 +41,7 @@ db.coll.update({"_id": 1}, {$max: {"imdb": 8}})                                 
 db.coll.update({"_id": 1}, {$currentDate: {"lastModified": true}})                  # Sets the lastModified field to the current date and time.
 db.coll.update({"_id": 1}, {$currentDate: {"lastModified": {$type: "timestamp"}}})  # Sets the lastModified field to the current timestamp.
 ```
+
 # Array:
 ```bash
 
@@ -76,27 +64,59 @@ db.coll.update({"year":1999},{$set:{"decade":"90's"}},{"multi" :true})          
 db.coll.updateMany({"year" :1999},{$set:{"decade":"90's"}})                         # Same as above.
 ```
 
+# FindOneAndUpdate:
+```bash
+
+db.coll.findOneAndUpdate({"name":"Max"},{$inc:{"points" :5}},{returnNewDocument:true})  
+
+# Increments points field by $5 for first document that matches query filter and returns updated document.
+```
+
+
 # Upsert:
 ```bash
+
 db.coll.update({"_id" :1},{$set:{item:"apple"},$setOnInsert:{defaultQty :100}},{upsert:true})   
 # Inserts a new document with _id equal to $1,item equal to “apple”,and defaultQty equal to $100 if no document matches query filter.
 
-```
---------------------------------------------------------------------------------------------------
 
-# Delete
+```
+# Replace
+
 ```bash
 
-db.coll.remove({name: "Max"})                       # Removes all documents where name is Max.
-db.coll.remove({name: "Max"}, {justOne: true})      # Removes only one document where name is Max.
-db.coll.remove({})                                  # Removes all documents in the collection. WARNING! This does not delete the collection itself and its index definitions.
-db.coll.remove({name: "Max"}, {"writeConcern": {"w": "majority", "wtimeout": 5000}})
-# Removes all documents where name is Max with write concern set to majority and write timeout set to 5000 milliseconds.
-db.coll.findOneAndDelete({"name": "Max"})           # Finds a document where name is Max, removes it, and returns the removed document.
-```
 
+db.coll.replaceOne({"name": "Max"}, {"firstname": "Maxime", "surname": "Beugnet"})
+# Replaces the document where name is Max with a new document that has firstname set to Maxime and surname set to Beugnet.
+
+```
+# Write concern
+```bash
+
+
+db.coll.update({}, {$set: {"x": 1}}, {"writeConcern": {"w": "majority", "wtimeout": 5000}})
+# Sets x field to 1 for all documents in the collection with write concern set to majority and write timeout set to 5000 milliseconds.
+```
 --------------------------------------------------------------------------------------------------
-# Count:
+
+<p>
+</details>
+
+<details><summary>Read (Find)</summary><p>
+
+
+# Read
+
+```bash
+db.coll.findOne()                                                   # Returns a single document from the collection.
+db.coll.find()                                                      # Returns all documents in the collection.
+db.coll.find().pretty()                                             # Returns all documents in the collection in a formatted way.
+db.coll.find({name: "Mohamed", age: 32})                            # Returns all documents where name is “Max” and age is 32.
+db.coll.find({date: ISODate("2020-09-25T13:57:17.180Z")})           # Returns all documents where date is “2020-09-25T13:57:17.180Z”.
+db.coll.find({name: "Mohamed", age: 32}).explain("executionStats")  # Returns statistics about the query execution.
+db.coll.distinct("name")                                            # Returns an array of distinct values for the name field.
+```
+## ● Count:
 ```bash
 
 
@@ -106,7 +126,7 @@ db.coll.countDocuments({age: 32})                                   # Returns an
 
 
 ```
-# Comparison:
+## ● Comparison:
 
 ```bash
 
@@ -120,7 +140,7 @@ db.coll.find({"year": {$nin: [1958, 1959]}})                        # Find where
 
 ```
 
-# Logical:
+## ● Logical:
 ```bash
 
 db.coll.find({name:{$not: {$eq: "Mohamed"}}})                       # Find where name is not “Mohamed”.
@@ -130,7 +150,7 @@ db.coll.find({$and: [{$or: [{qty: {$lt :10}}, {qty :{$gt: 50}}]},
                      {$or: [{sale: true}, {price: {$lt: 5 }}]}]})   # Find that satisfy both conditions.
 
 ```
-# Element
+## ● Element
 
 ```bash
 db.coll.find({name: {$exists: true}})                             # Returns all documents where name exists.
@@ -138,7 +158,9 @@ db.coll.find({"zipCode": {$type: 2 }})                            # Returns all 
 db.coll.find({"zipCode": {$type: "string"}})                      # Same as above.
 ```
 
-# Aggregation Pipeline: The following pipeline stages are used:
+
+
+## Aggregation Pipeline: The following pipeline stages are used:
 ```bash
 # Aggregation Pipeline
 db.coll.aggregate([
@@ -153,7 +175,7 @@ $sort stage sorts the resulting grouped data by total amount in descending order
 
 ```
 
-# Text Search
+## Text Search
 
 ```bash
 db.coll.find({$text: {$search: "cake"}}, {score: {$meta: "textScore"}}).sort({score: {$meta: "textScore"}})
@@ -161,7 +183,7 @@ db.coll.find({$text: {$search: "cake"}}, {score: {$meta: "textScore"}}).sort({sc
 # Text search with a “text” index: Returns all documents that contain the word “cake” using a text index on the collection.
 
 ```
-# Regex
+## Regex
 
 ```bash
 
@@ -170,8 +192,7 @@ db.coll.find({name: /^Max$/i})    # Returns all documents where name equals exac
 
 ```
 
-
-# Array:
+## Array:
 
 ```bash
 
@@ -179,7 +200,7 @@ db.coll.find({tags: {$all: ["Realm", "Charts"]}})   # Returns all documents wher
 db.coll.find({field: {$size: 2}})                   # Returns all documents where field array has a size of 2.
 
 ```
-# Element:
+## Element:
 
 ```bash
 
@@ -188,14 +209,14 @@ db.coll.find({results: {$elemMatch: {product: "xyz", score: {$gte: 8}}}})
 # Returns all documents where results array contains at least one element that has product equal to “xyz” and score greater than or equal to 8.
 ```
 
-# Projections:
+## Projections:
 ```bash
 db.coll.find({"x": 1}, {"actors": 1})                # Returns all documents where x is 1 and includes actors and _id fields.
 db.coll.find({"x": 1}, {"actors": 1, "_id": 0})      # Returns all documents where x is 1 and includes actors field but excludes _id field.
 db.coll.find({"x": 1}, {"actors": 0, "summary": 0})  # Returns all documents where x is 1 and excludes actors and summary fields.
 ```
 
-# Sort, skip, limit:
+## Sort, skip, limit:
 
 ```bash
 
@@ -204,37 +225,22 @@ db.coll.find({}).sort({"year": 1, "rating": -1}).skip(10).limit(3)
 # Returns three documents sorted by year in ascending order and rating in descending order, skipping the first ten documents.
 ```
 
-# Read Concern:
+## Read Concern:
 
 ```bash
 
 db.coll.find().readConcern("majority") # Returns all documents with read concern set to majority.
 
+db.coll.find({}, { readConcern: { level: "majority" } }) 
+
 ```
 
 --------------------------------------------------------------------------------------------------
 
+<p>
+</details>
 
-
-# FindOneAndUpdate:
-```bash
-
-db.coll.findOneAndUpdate({"name":"Max"},{$inc:{"points" :5}},{returnNewDocument:true})  
-
-# Increments points field by $5 for first document that matches query filter and returns updated document.
-```
-
-
-
-# Replace
-
-```bash
-
-
-db.coll.replaceOne({"name": "Max"}, {"firstname": "Maxime", "surname": "Beugnet"})
-# Replaces the document where name is Max with a new document that has firstname set to Maxime and surname set to Beugnet.
-
-```
+<details><summary>Save & Delete</summary><p>
 
 # Save
 
@@ -246,15 +252,20 @@ db.coll.save({"item": "book", "qty": 40})
 
 
 ```
-# Write concern
+
+
+## Delete
 ```bash
 
-
-db.coll.update({}, {$set: {"x": 1}}, {"writeConcern": {"w": "majority", "wtimeout": 5000}})
-# Sets x field to 1 for all documents in the collection with write concern set to majority and write timeout set to 5000 milliseconds.
+db.coll.remove({name: "Max"})                       # Removes all documents where name is Max.
+db.coll.remove({name: "Max"}, {justOne: true})      # Removes only one document where name is Max.
+db.coll.remove({})                                  # Removes all documents in the collection. WARNING! This does not delete the collection itself and its index definitions.
+db.coll.remove({name: "Max"}, {"writeConcern": {"w": "majority", "wtimeout": 5000}})
+# Removes all documents where name is Max with write concern set to majority and write timeout set to 5000 milliseconds.
+db.coll.findOneAndDelete({"name": "Max"})           # Finds a document where name is Max, removes it, and returns the removed document.
 ```
---------------------------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------------------------
 
 </p>
 
@@ -263,15 +274,8 @@ db.coll.update({}, {$set: {"x": 1}}, {"writeConcern": {"w": "majority", "wtimeou
 <details><summary>Databases and Collections
 </summary><p>
 
-## Drop
-
-
-```bash
-The db.coll.drop() command removes the collection and its index definitions. The db.dropDatabase() command removes the entire database. Please be careful while using these commands.
-
-```
---------------------------------------------------------------------------------------------------
-## Create Collection
+-
+# Create Collection
 
 
 
@@ -309,6 +313,8 @@ The db.createCollection() command creates a new collection with a $jsonschema. T
 
 
 ```bash
+The db.coll.drop() 
+# command removes the collection and its index definitions. The db.dropDatabase() command removes the entire database. Please be careful while using these commands.
 db.coll.stats()                             # Returns statistics about the collection.
 db.coll.storageSize()                       # Returns the total size of the data in the collection.
 db.coll.totalIndexSize()                    # Returns the total size of all indexes created on the collection.
