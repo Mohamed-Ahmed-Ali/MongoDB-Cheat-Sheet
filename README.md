@@ -158,9 +158,50 @@ db.coll.find({"zipCode": {$type: 2 }})                            # Returns all 
 db.coll.find({"zipCode": {$type: "string"}})                      # Same as above.
 ```
 
+## ● Regex
+
+```bash
+
+db.coll.find({name: /^Max/})      # Returns all documents where name starts with letter “M” (case sensitive).
+db.coll.find({name: /^Max$/i})    # Returns all documents where name equals exactly to “Max” (case insensitive).
+
+```
+
+## ● Array:
+
+```bash
+
+db.coll.find({tags: {$all: ["Realm", "Charts"]}})   # Returns all documents where tags array contains both “Realm” and “Charts”.
+db.coll.find({field: {$size: 2}})                   # Returns all documents where field array has a size of 2.
+
+```
+## ● Element:
+
+```bash
+
+db.coll.find({results: {$elemMatch: {product: "xyz", score: {$gte: 8}}}}) 
+
+# Returns all documents where results array contains at least one element that has product equal to “xyz” and score greater than or equal to 8.
+```
+
+## ● Projections:
+```bash
+db.coll.find({"x": 1}, {"actors": 1})                # Returns all documents where x is 1 and includes actors and _id fields.
+db.coll.find({"x": 1}, {"actors": 1, "_id": 0})      # Returns all documents where x is 1 and includes actors field but excludes _id field.
+db.coll.find({"x": 1}, {"actors": 0, "summary": 0})  # Returns all documents where x is 1 and excludes actors and summary fields.
+```
+
+## ● Sort, skip, limit:
+
+```bash
+
+db.coll.find({}).sort({"year": 1, "rating": -1}).skip(10).limit(3) 
+
+# Returns three documents sorted by year in ascending order and rating in descending order, skipping the first ten documents.
+```
 
 
-## Aggregation Pipeline: The following pipeline stages are used:
+# Aggregation Pipeline: The following pipeline stages are used:
 ```bash
 # Aggregation Pipeline
 db.coll.aggregate([
@@ -175,7 +216,7 @@ $sort stage sorts the resulting grouped data by total amount in descending order
 
 ```
 
-## Text Search
+# Text Search
 
 ```bash
 db.coll.find({$text: {$search: "cake"}}, {score: {$meta: "textScore"}}).sort({score: {$meta: "textScore"}})
@@ -183,49 +224,9 @@ db.coll.find({$text: {$search: "cake"}}, {score: {$meta: "textScore"}}).sort({sc
 # Text search with a “text” index: Returns all documents that contain the word “cake” using a text index on the collection.
 
 ```
-## Regex
 
-```bash
 
-db.coll.find({name: /^Max/})      # Returns all documents where name starts with letter “M” (case sensitive).
-db.coll.find({name: /^Max$/i})    # Returns all documents where name equals exactly to “Max” (case insensitive).
-
-```
-
-## Array:
-
-```bash
-
-db.coll.find({tags: {$all: ["Realm", "Charts"]}})   # Returns all documents where tags array contains both “Realm” and “Charts”.
-db.coll.find({field: {$size: 2}})                   # Returns all documents where field array has a size of 2.
-
-```
-## Element:
-
-```bash
-
-db.coll.find({results: {$elemMatch: {product: "xyz", score: {$gte: 8}}}}) 
-
-# Returns all documents where results array contains at least one element that has product equal to “xyz” and score greater than or equal to 8.
-```
-
-## Projections:
-```bash
-db.coll.find({"x": 1}, {"actors": 1})                # Returns all documents where x is 1 and includes actors and _id fields.
-db.coll.find({"x": 1}, {"actors": 1, "_id": 0})      # Returns all documents where x is 1 and includes actors field but excludes _id field.
-db.coll.find({"x": 1}, {"actors": 0, "summary": 0})  # Returns all documents where x is 1 and excludes actors and summary fields.
-```
-
-## Sort, skip, limit:
-
-```bash
-
-db.coll.find({}).sort({"year": 1, "rating": -1}).skip(10).limit(3) 
-
-# Returns three documents sorted by year in ascending order and rating in descending order, skipping the first ten documents.
-```
-
-## Read Concern:
+# Read Concern:
 
 ```bash
 
