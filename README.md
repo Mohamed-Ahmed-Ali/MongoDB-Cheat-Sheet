@@ -123,11 +123,13 @@ db.coll.aggregate([
   {$match: {status: "A"}},
   {$group: {_id: "$cust_id", total: {$sum: "$amount"}}},
   {$sort: {total: -1}}
+  {$out:"aggdata"}
 ])
 
 $match stage filters out only those documents whose status field equals “A”.
 $group stage groups the matching documents by cust_id and calculates the total amount for each cust_id using $sum.
 $sort stage sorts the resulting grouped data by total amount in descending order.
+$out stage that save the aggregation pipeline output to new collication
 
 ```
 
