@@ -104,7 +104,6 @@ db.coll.update({}, {$set: {"x": 1}}, {"writeConcern": {"w": "majority", "wtimeou
 
 <details><summary>Read (Find)</summary><p>
 
-
 # Read
 
 ```bash
@@ -117,7 +116,48 @@ db.coll.find({name: "Mohamed", age: 32}).explain("executionStats")  # Returns st
 db.coll.distinct("name")                                            # Returns an array of distinct values for the name field.
 ```
 
-<p><summary>Operators</summary><p>
+# Aggregation Pipeline: The following pipeline stages are used:
+```bash
+# Aggregation Pipeline
+db.coll.aggregate([
+  {$match: {status: "A"}},
+  {$group: {_id: "$cust_id", total: {$sum: "$amount"}}},
+  {$sort: {total: -1}}
+])
+
+$match stage filters out only those documents whose status field equals “A”.
+$group stage groups the matching documents by cust_id and calculates the total amount for each cust_id using $sum.
+$sort stage sorts the resulting grouped data by total amount in descending order.
+
+```
+
+# Text Search
+
+```bash
+db.coll.find({$text: {$search: "cake"}}, {score: {$meta: "textScore"}}).sort({score: {$meta: "textScore"}})
+
+# Text search with a “text” index: Returns all documents that contain the word “cake” using a text index on the collection.
+
+```
+
+# Read Concern:
+
+```bash
+
+db.coll.find().readConcern("majority") # Returns all documents with read concern set to majority.
+
+db.coll.find({}, { readConcern: { level: "majority" } }) 
+
+```
+
+--------------------------------------------------------------------------------------------------
+
+<p>
+</details>
+
+<details><summary>Operators </summary><p>
+
+
 ## ● Count:
 ```bash
 
@@ -201,44 +241,6 @@ db.coll.find({}).sort({"year": 1, "rating": -1}).skip(10).limit(3)
 
 # Returns three documents sorted by year in ascending order and rating in descending order, skipping the first ten documents.
 ```
-<p>
-
-# Aggregation Pipeline: The following pipeline stages are used:
-```bash
-# Aggregation Pipeline
-db.coll.aggregate([
-  {$match: {status: "A"}},
-  {$group: {_id: "$cust_id", total: {$sum: "$amount"}}},
-  {$sort: {total: -1}}
-])
-
-$match stage filters out only those documents whose status field equals “A”.
-$group stage groups the matching documents by cust_id and calculates the total amount for each cust_id using $sum.
-$sort stage sorts the resulting grouped data by total amount in descending order.
-
-```
-
-# Text Search
-
-```bash
-db.coll.find({$text: {$search: "cake"}}, {score: {$meta: "textScore"}}).sort({score: {$meta: "textScore"}})
-
-# Text search with a “text” index: Returns all documents that contain the word “cake” using a text index on the collection.
-
-```
-
-
-# Read Concern:
-
-```bash
-
-db.coll.find().readConcern("majority") # Returns all documents with read concern set to majority.
-
-db.coll.find({}, { readConcern: { level: "majority" } }) 
-
-```
-
---------------------------------------------------------------------------------------------------
 
 <p>
 </details>
